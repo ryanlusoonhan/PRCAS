@@ -1,0 +1,42 @@
+# FastAPI and Serving
+fastapi>=0.95.0
+uvicorn[standard]>=0.20.0
+pydantic>=1.10.0
+
+# Machine Learning
+scikit-learn>=1.2.0
+xgboost>=1.7.0
+imbalanced-learn>=0.10.0
+
+# Data Processing
+pandas>=1.5.0
+numpy>=1.24.0
+
+# Model Persistence
+joblib>=1.2.0
+
+# Experiment Tracking
+mlflow>=2.0.0
+
+# Data Validation
+pandera>=0.14.0
+
+# Explainability
+shap>=0.41.0
+
+# UI
+streamlit>=1.20.0
+plotly>=5.15.0
+requests>=2.28.0
+
+# Utilities
+pyyaml>=6.0
+python-dotenv>=1.0.0
+
+# Testing
+pytest>=7.2.0
+pytest-cov>=4.0.0
+
+# Linting
+flake8>=6.0.0
+black>=23.0.0

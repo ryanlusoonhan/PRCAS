@@ -1,0 +1,216 @@
+# PRCAS - Predictive Retention & Customer Analytics System
+# Centralized Configuration File
+
+# Project Settings
+project:
+  name: "Churn-Shield AI"
+  version: "1.0.0"
+  description: "Customer Segmentation and Churn Prediction for Telecommunications"
+
+# Data Paths (DVC-ready)
+data:
+  raw_train_path: "data/raw/churn-bigml-80.csv"
+  raw_test_path: "data/raw/churn-bigml-20.csv"
+  processed_path: "data/processed/"
+  rejects_path: "rejects/"
+  
+# Model Artifacts
+models:
+  model_dir: "models/"
+  model_filename: "xgboost_churn_model.pkl"
+  transformer_filename: "preprocessing_transformer.pkl"
+  cluster_model_filename: "kmeans_segmentation.pkl"
+
+# MLflow Configuration
+mlflow:
+  tracking_uri: "http://localhost:5000"
+  experiment_name: "churn_prediction"
+  registered_model_name: "churn_shield_xgboost"
+
+# API Configuration
+api:
+  host: "0.0.0.0"
+  port: 8000
+  debug: false
+  
+# Dashboard Configuration
+dashboard:
+  title: "Churn-Shield AI Dashboard"
+  api_url: "http://localhost:8000"
+
+# Feature Schema Definitions
+schema:
+  # Categorical columns
+  categorical_columns:
+    - "State"
+    - "International plan"
+    - "Voice mail plan"
+    - "Region"
+  
+  # Binary columns (Yes/No to 1/0)
+  binary_columns:
+    - "International plan"
+    - "Voice mail plan"
+  
+  # Numerical columns to scale
+  numerical_columns:
+    - "Account length"
+    - "Number vmail messages"
+    - "Total day minutes"
+    - "Total day calls"
+    - "Total day charge"
+    - "Total eve minutes"
+    - "Total eve calls"
+    - "Total eve charge"
+    - "Total night minutes"
+    - "Total night calls"
+    - "Total night charge"
+    - "Total intl minutes"
+    - "Total intl calls"
+    - "Total intl charge"
+    - "Customer service calls"
+  
+  # Columns to drop (high correlation or redundant)
+  drop_columns:
+    - "Voice mail plan"
+    - "Total day minutes"
+    - "Total eve minutes"
+    - "Total night minutes"
+    - "Total intl minutes"
+    - "Area code"
+    - "State"  # Will be converted to Region
+  
+  # Target column
+  target_column: "Churn"
+
+# State to Region Mapping (U.S. Census Bureau's four regions)
+state_to_region:
+  # Northeast
+  CT: "Northeast"
+  ME: "Northeast"
+  MA: "Northeast"
+  NH: "Northeast"
+  RI: "Northeast"
+  VT: "Northeast"
+  NJ: "Northeast"
+  NY: "Northeast"
+  PA: "Northeast"
+  # Midwest
+  IL: "Midwest"
+  IN: "Midwest"
+  MI: "Midwest"
+  OH: "Midwest"
+  WI: "Midwest"
+  IA: "Midwest"
+  KS: "Midwest"
+  MN: "Midwest"
+  MO: "Midwest"
+  NE: "Midwest"
+  ND: "Midwest"
+  SD: "Midwest"
+  # South
+  DE: "South"
+  FL: "South"
+  GA: "South"
+  MD: "South"
+  NC: "South"
+  SC: "South"
+  VA: "South"
+  WV: "South"
+  AL: "South"
+  KY: "South"
+  MS: "South"
+  TN: "South"
+  AR: "South"
+  LA: "South"
+  OK: "South"
+  TX: "South"
+  DC: "South"
+  # West
+  AZ: "West"
+  CO: "West"
+  ID: "West"
+  MT: "West"
+  NV: "West"
+  NM: "West"
+  UT: "West"
+  WY: "West"
+  AK: "West"
+  CA: "West"
+  HI: "West"
+  OR: "West"
+  WA: "West"
+
+# Validation Constraints (Pandera)
+validation:
+  account_length:
+    min: 1
+    max: 250
+  total_day_minutes:
+    min: 0.0
+    max: 500.0
+  total_day_calls:
+    min: 0
+    max: 200
+  customer_service_calls:
+    min: 0
+    max: 20
+  total_day_charge:
+    min: 0.0
+    max: 100.0
+
+# XGBoost Hyperparameters
+xgboost:
+  objective: "binary:logistic"
+  eval_metric: "aucpr"
+  random_state: 42
+  n_estimators: 200
+  learning_rate: 0.1
+  max_depth: 5
+  subsample: 0.8
+  colsample_bytree: 0.8
+  scale_pos_weight: "balanced"  # Will be calculated as sum(negative)/sum(positive)
+
+# SMOTE Configuration
+smote:
+  random_state: 42
+  k_neighbors: 5
+
+# K-Means Clustering
+clustering:
+  n_clusters: 2
+  random_state: 42
+  n_init: 10
+
+# Training Configuration
+training:
+  test_size: 0.2
+  random_state: 42
+  cv_folds: 5
+  scoring: "f1"
+
+# Prediction Threshold
+prediction:
+  default_threshold: 0.5
+  risk_levels:
+    low:
+      max: 0.3
+      label: "Low"
+      recommendation: "Standard Monitoring"
+    medium:
+      min: 0.3
+      max: 0.7
+      label: "Medium"
+      recommendation: "Preventive Outreach"
+    high:
+      min: 0.7
+      label: "High"
+      recommendation: "High Priority Retention Call"
+
+# Logging Configuration
+logging:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/application.log"
+  max_bytes: 10485760  # 10MB
+  backup_count: 5
